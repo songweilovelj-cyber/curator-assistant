@@ -302,6 +302,43 @@ function CurationWorkspace() {
     const areaNum = parseInt(totalArea || area) || 1800
     const totalDuration = curationContent.zones.reduce((acc, z) => acc + parseInt(z.duration) || 15, 0)
 
+    // ========== 预算估算计算（基于市场行情参考价）==========
+    // 1. 场地与基建（参考国内一线城市博物馆特展市场行情）
+    const venueRent = areaNum * 350
+    const wallBuild = areaNum * 200
+    const floorSign = areaNum * 80
+    const infraSubtotal = venueRent + wallBuild + floorSign
+
+    // 2. 展品相关（按文物等级差异化定价，参考国内博物馆行业惯例）
+    const transportCost = artifacts.reduce((sum, a) => {
+      const level = (a.level || '').toLowerCase()
+      if (level.includes('一级') || level.includes('禁止') || level.includes('国宝')) return sum + 15000
+      if (level.includes('二级') || level.includes('珍贵')) return sum + 8000
+      return sum + 3000
+    }, 0)
+    const insuranceCost = artifacts.reduce((sum, a) => {
+      const level = (a.level || '').toLowerCase()
+      if (level.includes('一级') || level.includes('禁止') || level.includes('国宝')) return sum + 6000
+      if (level.includes('二级') || level.includes('珍贵')) return sum + 3000
+      return sum + 1000
+    }, 0)
+    const showcaseCost = selectedShowcases.length * 80000
+    const exhibitSubtotal = transportCost + insuranceCost + showcaseCost
+
+    // 3. 多媒体与灯光（参考展览行业设备租赁/采购行情）
+    const digitalCost = selectedDigitals.length * 120000
+    const lightingCost = areaNum * 45
+    const audioCost = areaNum * 30
+    const mediaSubtotal = digitalCost + lightingCost + audioCost
+
+    // 4. 运营与人力
+    const designFee = areaNum * 60
+    const securityCost = areaNum * 40
+    const promoCost = areaNum * 50
+    const opsSubtotal = designFee + securityCost + promoCost
+
+    const grandTotal = infraSubtotal + exhibitSubtotal + mediaSubtotal + opsSubtotal
+
     const html = `<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -1070,36 +1107,45 @@ ${curationContent.zones.map((zone, idx) => {
 <!-- ==================== 预算估算 ==================== -->
 <section class="section section-anchor" id="budget">
   <div class="section-header"><span class="num">06</span> 预算估算</div>
-  <div class="section-sub">BUDGET ESTIMATION · 仅供参考</div>
+  <div class="section-sub">BUDGET ESTIMATION · 参考估算</div>
   <div class="budget-grid">
     <div class="budget-card">
       <div class="bc-title">🏛 场地与基础建设</div>
-      <div class="bc-row"><span>展览场地租赁（${areaNum}㎡ × 800元/㎡）</span><span>¥${(areaNum * 800).toLocaleString()}</span></div>
-      <div class="bc-row"><span>展墙搭建与基础装修</span><span>¥${(areaNum * 350).toLocaleString()}</span></div>
-      <div class="bc-row"><span>空调与通风系统</span><span>¥${(areaNum * 120).toLocaleString()}</span></div>
-      <div class="bc-total"><span>小计</span><span>¥${(areaNum * 1270).toLocaleString()}</span></div>
+      <div class="bc-row"><span>展览场地租赁（${areaNum}㎡ × 350元/㎡）</span><span>¥${venueRent.toLocaleString()}</span></div>
+      <div class="bc-row"><span>展墙搭建与基础装修（${areaNum}㎡ × 200元/㎡）</span><span>¥${wallBuild.toLocaleString()}</span></div>
+      <div class="bc-row"><span>地面处理与标识系统（${areaNum}㎡ × 80元/㎡）</span><span>¥${floorSign.toLocaleString()}</span></div>
+      <div class="bc-total"><span>小计</span><span>¥${infraSubtotal.toLocaleString()}</span></div>
     </div>
     <div class="budget-card">
       <div class="bc-title">🏺 展品保险与运输</div>
-      <div class="bc-row"><span>文物运输（${artifacts.length}件 × 5万/件）</span><span>¥${(artifacts.length * 50000).toLocaleString()}</span></div>
-      <div class="bc-row"><span>文物保险费</span><span>¥${(artifacts.length * 20000).toLocaleString()}</span></div>
-      <div class="bc-row"><span>展柜定制（${selectedShowcases.length}种类型）</span><span>¥${(selectedShowcases.length * 180000).toLocaleString()}</span></div>
-      <div class="bc-total"><span>小计</span><span>¥${(artifacts.length * 70000 + selectedShowcases.length * 180000).toLocaleString()}</span></div>
+      <div class="bc-row"><span>文物运输（${artifacts.length}件，按等级差异化）</span><span>¥${transportCost.toLocaleString()}</span></div>
+      <div class="bc-row"><span>文物保险（按估值费率0.1%-0.5%估算）</span><span>¥${insuranceCost.toLocaleString()}</span></div>
+      <div class="bc-row"><span>恒温恒湿展柜（${selectedShowcases.length}种 × 8万/个）</span><span>¥${showcaseCost.toLocaleString()}</span></div>
+      <div class="bc-total"><span>小计</span><span>¥${exhibitSubtotal.toLocaleString()}</span></div>
     </div>
     <div class="budget-card">
-      <div class="bc-title">✨ 多媒体与互动展项</div>
-      <div class="bc-row"><span>数字展项（${selectedDigitals.length}项）</span><span>¥${(selectedDigitals.length * 250000).toLocaleString()}</span></div>
-      <div class="bc-row"><span>灯光系统</span><span>¥${(areaNum * 80).toLocaleString()}</span></div>
-      <div class="bc-row"><span>音响与导览系统</span><span>¥${(areaNum * 50).toLocaleString()}</span></div>
-      <div class="bc-total"><span>小计</span><span>¥${(selectedDigitals.length * 250000 + areaNum * 130).toLocaleString()}</span></div>
+      <div class="bc-title">✨ 多媒体与展陈设备</div>
+      <div class="bc-row"><span>数字展项（${selectedDigitals.length}项 × 12万/项）</span><span>¥${digitalCost.toLocaleString()}</span></div>
+      <div class="bc-row"><span>专业展陈灯光（${areaNum}㎡ × 45元/㎡）</span><span>¥${lightingCost.toLocaleString()}</span></div>
+      <div class="bc-row"><span>音响与导览系统（${areaNum}㎡ × 30元/㎡）</span><span>¥${audioCost.toLocaleString()}</span></div>
+      <div class="bc-total"><span>小计</span><span>¥${mediaSubtotal.toLocaleString()}</span></div>
+    </div>
+    <div class="budget-card">
+      <div class="bc-title">📋 运营与人力成本</div>
+      <div class="bc-row"><span>策展设计费（${areaNum}㎡ × 60元/㎡）</span><span>¥${designFee.toLocaleString()}</span></div>
+      <div class="bc-row"><span>安保与看护（${areaNum}㎡ × 40元/㎡）</span><span>¥${securityCost.toLocaleString()}</span></div>
+      <div class="bc-row"><span>宣传推广（${areaNum}㎡ × 50元/㎡）</span><span>¥${promoCost.toLocaleString()}</span></div>
+      <div class="bc-total"><span>小计</span><span>¥${opsSubtotal.toLocaleString()}</span></div>
     </div>
   </div>
   <div style="margin-top: 24px; background: rgba(78,205,196,0.06); border: 1px solid rgba(78,205,196,0.2); border-radius: 12px; padding: 20px 24px;">
-    <div style="font-size: 15px; font-weight: 600; color: #4ECDC4; margin-bottom: 8px;">预算总计（估算）</div>
+    <div style="font-size: 15px; font-weight: 600; color: #4ECDC4; margin-bottom: 8px;">预算总计（参考估算）</div>
     <div style="font-size: 28px; font-weight: 700; color: #F0C060;">
-      ¥${(areaNum * 1270 + artifacts.length * 70000 + selectedShowcases.length * 180000 + selectedDigitals.length * 250000 + areaNum * 130).toLocaleString()}
+      ¥${grandTotal.toLocaleString()}
     </div>
-    <div style="font-size: 12px; color: #8888aa; margin-top: 6px;">以上为初步估算，实际费用根据设计方案、选材标准及甲方需求调整</div>
+    <div style="font-size: 12px; color: #8888aa; margin-top: 6px;">
+      以上报价为基于国内博物馆展览行业市场行情的参考估算，实际费用受以下因素影响：城市级别、场馆条件、文物等级与数量、展柜材质与工艺、数字展项技术方案、展期长短、设计复杂度等。建议联系专业展览公司获取详细报价单。
+    </div>
   </div>
 </section>
 
@@ -1133,23 +1179,55 @@ ${curationContent.zones.map((zone, idx) => {
 
   // AI配图生成
   const IMAGE_API_URL = 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image'
-  
-  const generateImage = async (key: string, prompt: string) => {
-    if (generatingImages.has(key)) return
-    
+
+  const generateImage = async (key: string, prompt: string, retryCount = 0): Promise<boolean> => {
+    if (generatingImages.has(key)) return false
+    if (!prompt || prompt.trim().length < 3) {
+      showToastFn(`⚠️ ${key === 'cover' ? '封面' : '展区'}图片提示词无效，跳过生成`)
+      return false
+    }
+
     setGeneratingImages(prev => new Set([...prev, key]))
     try {
-      const response = await fetch(`${IMAGE_API_URL}?prompt=${encodeURIComponent(prompt)}&image_size=landscape_16_9`)
+      const controller = new AbortController()
+      const timeoutId = setTimeout(() => controller.abort(), 30000)
+      const response = await fetch(
+        `${IMAGE_API_URL}?prompt=${encodeURIComponent(prompt)}&image_size=landscape_16_9`,
+        { signal: controller.signal }
+      )
+      clearTimeout(timeoutId)
+
       if (!response.ok) {
-        showToastFn('图片生成失败')
-        return
+        const errText = await response.text().catch(() => '')
+        console.error(`[图片生成失败] key=${key}, status=${response.status}, detail=${errText}`)
+        if (retryCount < 2) {
+          showToastFn(`⏳ ${key === 'cover' ? '封面' : '展区'}图片生成失败，第${retryCount + 1}次重试...`)
+          await new Promise(r => setTimeout(r, 1500))
+          return generateImage(key, prompt, retryCount + 1)
+        }
+        showToastFn(`❌ ${key === 'cover' ? '封面' : '展区'}图片生成失败（${response.status}），请单独点击重试`)
+        return false
       }
+
       const blob = await response.blob()
+      if (blob.size < 1024) {
+        throw new Error('返回图片数据过小')
+      }
       const imageUrl = URL.createObjectURL(blob)
       setGeneratedImages(prev => ({ ...prev, [key]: imageUrl }))
-      showToastFn('✅ 图片生成成功')
-    } catch (error) {
-      showToastFn('图片生成失败，请稍后重试')
+      return true
+    } catch (error: any) {
+      console.error(`[图片生成异常] key=${key}:`, error)
+      if (error.name === 'AbortError') {
+        showToastFn('⏱️ 图片生成超时，请检查网络后重试')
+      } else if (retryCount < 2) {
+        showToastFn(`⏳ ${key === 'cover' ? '封面' : '展区'}图片生成异常，第${retryCount + 1}次重试...`)
+        await new Promise(r => setTimeout(r, 1500))
+        return generateImage(key, prompt, retryCount + 1)
+      } else {
+        showToastFn(`❌ ${key === 'cover' ? '封面' : '展区'}图片生成失败，请单独点击重试`)
+      }
+      return false
     } finally {
       setGeneratingImages(prev => {
         const newSet = new Set(prev)
@@ -1158,24 +1236,51 @@ ${curationContent.zones.map((zone, idx) => {
       })
     }
   }
-  
-  const generateAllImages = () => {
+
+  const generateAllImages = async () => {
     if (!curationContent) return
-    
-    // 生成封面图
-    if (!generatedImages['cover']) {
-      generateImage('cover', curationContent.coverImagePrompt)
+
+    const tasks: { key: string; prompt: string; label: string }[] = []
+
+    // 封面图
+    if (!generatedImages['cover'] && curationContent.coverImagePrompt) {
+      tasks.push({ key: 'cover', prompt: curationContent.coverImagePrompt, label: '封面' })
     }
-    
-    // 生成每个展区图
+
+    // 展区图
     curationContent.zones.forEach((zone, idx) => {
       const key = `zone_${idx}`
-      if (!generatedImages[key]) {
-        setTimeout(() => generateImage(key, zone.imagePrompt), idx * 300)
+      if (!generatedImages[key] && zone.imagePrompt) {
+        tasks.push({ key, prompt: zone.imagePrompt, label: zone.name })
       }
     })
-    
-    showToastFn('开始生成配图，请稍候...')
+
+    if (tasks.length === 0) {
+      showToastFn('✅ 所有配图已生成，无需重复生成')
+      return
+    }
+
+    showToastFn(`🎨 开始生成 ${tasks.length} 张配图，请稍候...`)
+    let successCount = 0
+    let failCount = 0
+
+    // 串行生成，间隔800ms避免并发限制
+    for (let i = 0; i < tasks.length; i++) {
+      const task = tasks[i]
+      showToastFn(`🎨 正在生成 ${task.label}... (${i + 1}/${tasks.length})`)
+      const ok = await generateImage(task.key, task.prompt)
+      if (ok) successCount++
+      else failCount++
+      if (i < tasks.length - 1) {
+        await new Promise(r => setTimeout(r, 800))
+      }
+    }
+
+    if (failCount === 0) {
+      showToastFn(`✅ 全部 ${successCount} 张配图生成成功！`)
+    } else {
+      showToastFn(`⚠️ ${successCount} 张成功，${failCount} 张失败，可单独点击重试`)
+    }
   }
   
   // 将Blob URL转换为base64
