@@ -1180,10 +1180,38 @@ ${curationContent.zones.map((zone, idx) => {
   // AI配图生成
   const IMAGE_API_URL = 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image'
 
+  const isImageApiAvailable = (() => {
+    const host = window.location.hostname
+    if (host === 'localhost' || host === '127.0.0.1' || host === '') return true
+    if (host.endsWith('.github.io')) return false
+    if (host.includes('github')) return false
+    return true
+  })()
+
+  const checkApiReachable = async (): Promise<boolean> => {
+    if (!isImageApiAvailable) return false
+    try {
+      const controller = new AbortController()
+      setTimeout(() => controller.abort(), 3000)
+      const res = await fetch(
+        `${IMAGE_API_URL}?prompt=test&image_size=square`,
+        { method: 'GET', signal: controller.signal }
+      )
+      return res.ok || res.status === 400 || res.status === 429
+    } catch {
+      return false
+    }
+  }
+
   const generateImage = async (key: string, prompt: string, retryCount = 0): Promise<boolean> => {
     if (generatingImages.has(key)) return false
     if (!prompt || prompt.trim().length < 3) {
       showToastFn(`⚠️ ${key === 'cover' ? '封面' : '展区'}图片提示词无效，跳过生成`)
+      return false
+    }
+
+    if (!isImageApiAvailable) {
+      showToastFn('⚠️ AI生图功能仅在本地开发环境（TRAE IDE）可用，当前为部署环境')
       return false
     }
 
@@ -1200,6 +1228,10 @@ ${curationContent.zones.map((zone, idx) => {
       if (!response.ok) {
         const errText = await response.text().catch(() => '')
         console.error(`[图片生成失败] key=${key}, status=${response.status}, detail=${errText}`)
+        if (response.status === 403 || response.status === 401) {
+          showToastFn('❌ AI生图API无法访问（可能需要在TRAE IDE本地环境中使用）')
+          return false
+        }
         if (retryCount < 2) {
           showToastFn(`⏳ ${key === 'cover' ? '封面' : '展区'}图片生成失败，第${retryCount + 1}次重试...`)
           await new Promise(r => setTimeout(r, 1500))
@@ -1220,6 +1252,8 @@ ${curationContent.zones.map((zone, idx) => {
       console.error(`[图片生成异常] key=${key}:`, error)
       if (error.name === 'AbortError') {
         showToastFn('⏱️ 图片生成超时，请检查网络后重试')
+      } else if (error.message?.includes('Failed to fetch') || error.name === 'TypeError') {
+        showToastFn('❌ 无法连接到AI生图服务，请在TRAE IDE本地环境中使用')
       } else if (retryCount < 2) {
         showToastFn(`⏳ ${key === 'cover' ? '封面' : '展区'}图片生成异常，第${retryCount + 1}次重试...`)
         await new Promise(r => setTimeout(r, 1500))
@@ -1239,6 +1273,11 @@ ${curationContent.zones.map((zone, idx) => {
 
   const generateAllImages = async () => {
     if (!curationContent) return
+
+    if (!isImageApiAvailable) {
+      showToastFn('⚠️ AI生图功能仅在TRAE IDE本地开发环境可用，部署环境暂不支持')
+      return
+    }
 
     const tasks: { key: string; prompt: string; label: string }[] = []
 
@@ -1264,7 +1303,6 @@ ${curationContent.zones.map((zone, idx) => {
     let successCount = 0
     let failCount = 0
 
-    // 串行生成，间隔800ms避免并发限制
     for (let i = 0; i < tasks.length; i++) {
       const task = tasks[i]
       showToastFn(`🎨 正在生成 ${task.label}... (${i + 1}/${tasks.length})`)
@@ -2715,11 +2753,24 @@ ${curationContent.zones.map((zone, idx) => {
           <button 
             className={`btn primary ${generatingImages.size > 0 ? 'loading' : ''}`}
             onClick={generateAllImages}
-            disabled={!curationContent || generatingImages.size > 0}
+            disabled={!curationContent || generatingImages.size > 0 || !isImageApiAvailable}
           >
             {generatingImages.size > 0 ? `生成中 (${generatingImages.size})` : '一键生成全部配图'}
           </button>
         </div>
+        
+        {!isImageApiAvailable && (
+          <div className="igp-warn">
+            <span>⚠️</span>
+            <div>
+              <div style={{ fontWeight: 600, marginBottom: 4 }}>AI生图功能仅在TRAE IDE本地环境可用</div>
+              <div style={{ fontSize: 12, opacity: 0.7 }}>
+                当前为部署环境（{window.location.hostname}），无法调用本地AI生图API。
+                导出HTML时会自动使用CSS动画装饰作为替代方案。
+              </div>
+            </div>
+          </div>
+        )}
         
         {/* 封面配图 */}
         <div className="igp-card">
@@ -2730,14 +2781,14 @@ ${curationContent.zones.map((zone, idx) => {
             ) : (
               <div className="igc-placeholder">
                 <span>📷</span>
-                <span>点击生成封面图</span>
+                <span>{isImageApiAvailable ? '点击生成封面图' : '本地环境可用'}</span>
               </div>
             )}
           </div>
           <button 
             className={`btn secondary ${generatingImages.has('cover') ? 'loading' : ''}`}
             onClick={() => curationContent && generateImage('cover', curationContent.coverImagePrompt)}
-            disabled={generatingImages.has('cover') || !curationContent}
+            disabled={generatingImages.has('cover') || !curationContent || !isImageApiAvailable}
           >
             {generatingImages.has('cover') ? '生成中...' : '生成封面图'}
           </button>
@@ -2762,7 +2813,7 @@ ${curationContent.zones.map((zone, idx) => {
                 <button 
                   className={`btn tiny ${generatingImages.has(key) ? 'loading' : ''}`}
                   onClick={() => generateImage(key, zone.imagePrompt)}
-                  disabled={generatingImages.has(key)}
+                  disabled={generatingImages.has(key) || !isImageApiAvailable}
                 >
                   {generatingImages.has(key) ? '生成中...' : '生成'}
                 </button>
