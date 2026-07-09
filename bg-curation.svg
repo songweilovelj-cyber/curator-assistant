@@ -1,0 +1,184 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMid slice">
+  <!-- 宣纸底色 -->
+  <defs>
+    <radialGradient id="paperGrad" cx="50%" cy="50%" r="70%">
+      <stop offset="0%" stop-color="#fdfbf6"/>
+      <stop offset="60%" stop-color="#f7f0e6"/>
+      <stop offset="100%" stop-color="#e8dcc8"/>
+    </radialGradient>
+    <linearGradient id="mountain1" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#2c2822" stop-opacity="0.15"/>
+      <stop offset="100%" stop-color="#2c2822" stop-opacity="0.35"/>
+    </linearGradient>
+    <linearGradient id="mountain2" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#2c2822" stop-opacity="0.25"/>
+      <stop offset="100%" stop-color="#2c2822" stop-opacity="0.5"/>
+    </linearGradient>
+    <linearGradient id="mountain3" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#2c2822" stop-opacity="0.4"/>
+      <stop offset="100%" stop-color="#2c2822" stop-opacity="0.7"/>
+    </linearGradient>
+    <filter id="ink-blur">
+      <feGaussianBlur stdDeviation="2"/>
+    </filter>
+    <filter id="ink-soft">
+      <feGaussianBlur stdDeviation="6"/>
+    </filter>
+    <pattern id="rice-paper" x="0" y="0" width="100" height="100" patternUnits="userSpaceOnUse">
+      <rect width="100" height="100" fill="transparent"/>
+      <line x1="0" y1="25" x2="100" y2="25" stroke="#b8985a" stroke-width="0.3" opacity="0.08"/>
+      <line x1="0" y1="50" x2="100" y2="50" stroke="#b8985a" stroke-width="0.3" opacity="0.08"/>
+      <line x1="0" y1="75" x2="100" y2="75" stroke="#b8985a" stroke-width="0.3" opacity="0.08"/>
+      <line x1="25" y1="0" x2="25" y2="100" stroke="#b8985a" stroke-width="0.3" opacity="0.08"/>
+      <line x1="50" y1="0" x2="50" y2="100" stroke="#b8985a" stroke-width="0.3" opacity="0.08"/>
+      <line x1="75" y1="0" x2="75" y2="100" stroke="#b8985a" stroke-width="0.3" opacity="0.08"/>
+    </pattern>
+  </defs>
+  
+  <!-- 宣纸底色 -->
+  <rect width="1920" height="1080" fill="url(#paperGrad)"/>
+  
+  <!-- 宣纸纤维纹理 -->
+  <rect width="1920" height="1080" fill="url(#rice-paper)"/>
+  
+  <!-- 墨晕效果 - 模拟古画泼墨 -->
+  <ellipse cx="300" cy="200" rx="400" ry="200" fill="#2c2822" opacity="0.04" filter="url(#ink-soft)"/>
+  <ellipse cx="1600" cy="900" rx="500" ry="250" fill="#2c2822" opacity="0.05" filter="url(#ink-soft)"/>
+  <ellipse cx="1700" cy="150" rx="300" ry="150" fill="#b8985a" opacity="0.08" filter="url(#ink-soft)"/>
+  <ellipse cx="200" cy="850" rx="350" ry="180" fill="#b8985a" opacity="0.07" filter="url(#ink-soft)"/>
+  
+  <!-- 远山 - 最淡 -->
+  <path d="M 0 720 
+           Q 150 680 300 700 
+           T 600 690 
+           Q 800 670 1000 695 
+           T 1400 685 
+           Q 1600 675 1800 700 
+           L 1920 710 
+           L 1920 1080 
+           L 0 1080 Z" 
+        fill="url(#mountain1)" filter="url(#ink-blur)"/>
+  
+  <!-- 中山 - 中等 -->
+  <path d="M 0 780 
+           Q 100 740 200 760 
+           Q 300 730 400 750 
+           Q 500 720 600 745 
+           Q 700 715 800 740 
+           Q 900 720 1000 750 
+           Q 1100 730 1200 755 
+           Q 1300 725 1400 745 
+           Q 1500 720 1600 740 
+           Q 1700 725 1800 745 
+           Q 1900 735 1920 750 
+           L 1920 1080 
+           L 0 1080 Z" 
+        fill="url(#mountain2)" filter="url(#ink-blur)"/>
+  
+  <!-- 近山 - 最深 -->
+  <path d="M 0 850 
+           Q 80 820 160 840 
+           Q 240 810 320 830 
+           Q 400 800 480 825 
+           Q 560 795 640 820 
+           Q 720 800 800 825 
+           Q 880 805 960 830 
+           Q 1040 805 1120 825 
+           Q 1200 800 1280 820 
+           Q 1360 795 1440 815 
+           Q 1520 790 1600 810 
+           Q 1680 795 1760 815 
+           Q 1840 800 1920 820 
+           L 1920 1080 
+           L 0 1080 Z" 
+        fill="url(#mountain3)" filter="url(#ink-blur)"/>
+  
+  <!-- 孤峰点缀 -->
+  <path d="M 150 750 Q 180 680 200 750 Z" fill="#2c2822" opacity="0.4" filter="url(#ink-blur)"/>
+  <path d="M 420 760 Q 450 700 470 760 Z" fill="#2c2822" opacity="0.35" filter="url(#ink-blur)"/>
+  <path d="M 850 755 Q 880 690 900 755 Z" fill="#2c2822" opacity="0.4" filter="url(#ink-blur)"/>
+  <path d="M 1300 760 Q 1330 700 1350 760 Z" fill="#2c2822" opacity="0.35" filter="url(#ink-blur)"/>
+  <path d="M 1700 755 Q 1730 690 1750 755 Z" fill="#2c2822" opacity="0.4" filter="url(#ink-blur)"/>
+  
+  <!-- 飞鸟点缀 -->
+  <path d="M 400 250 Q 410 245 420 250 M 420 250 Q 430 245 440 250" stroke="#2c2822" stroke-width="1.5" fill="none" opacity="0.4"/>
+  <path d="M 600 180 Q 608 176 615 180 M 615 180 Q 622 176 630 180" stroke="#2c2822" stroke-width="1.2" fill="none" opacity="0.35"/>
+  <path d="M 1200 220 Q 1208 216 1215 220 M 1215 220 Q 1222 216 1230 220" stroke="#2c2822" stroke-width="1.3" fill="none" opacity="0.38"/>
+  <path d="M 1500 280 Q 1510 276 1520 280 M 1520 280 Q 1530 276 1540 280" stroke="#2c2822" stroke-width="1.4" fill="none" opacity="0.4"/>
+  
+  <!-- 太阳/月亮 - 远景 -->
+  <circle cx="1500" cy="200" r="60" fill="#c93939" opacity="0.15"/>
+  <circle cx="1500" cy="200" r="40" fill="#c93939" opacity="0.2"/>
+  <circle cx="1500" cy="200" r="25" fill="#c93939" opacity="0.25"/>
+  
+  <!-- 宝塔剪影 - 左下角 -->
+  <g opacity="0.5" transform="translate(120, 600)">
+    <rect x="15" y="80" width="20" height="60" fill="#2c2822"/>
+    <polygon points="10,80 40,80 35,70 15,70" fill="#2c2822"/>
+    <rect x="12" y="60" width="26" height="10" fill="#2c2822"/>
+    <polygon points="8,60 42,60 36,50 14,50" fill="#2c2822"/>
+    <rect x="18" y="40" width="14" height="10" fill="#2c2822"/>
+    <polygon points="14,40 36,40 30,30 20,30" fill="#2c2822"/>
+    <rect x="22" y="20" width="6" height="10" fill="#2c2822"/>
+    <polygon points="18,20 32,20 28,10 22,10" fill="#2c2822"/>
+    <line x1="25" y1="0" x2="25" y2="10" stroke="#2c2822" stroke-width="2"/>
+  </g>
+  
+  <!-- 帆船剪影 - 中景 -->
+  <g opacity="0.45" transform="translate(1600, 700)">
+    <path d="M 0 30 L 40 30 L 35 40 L 5 40 Z" fill="#2c2822"/>
+    <line x1="20" y1="0" x2="20" y2="30" stroke="#2c2822" stroke-width="1.5"/>
+    <path d="M 20 5 L 35 25 L 20 25 Z" fill="#2c2822"/>
+    <path d="M 20 8 L 10 22 L 20 22 Z" fill="#2c2822"/>
+  </g>
+  
+  <!-- 松树剪影 - 右侧 -->
+  <g opacity="0.5" transform="translate(1750, 650)">
+    <rect x="18" y="60" width="4" height="40" fill="#2c2822"/>
+    <ellipse cx="20" cy="50" rx="25" ry="20" fill="#2c2822"/>
+    <ellipse cx="20" cy="35" rx="20" ry="15" fill="#2c2822"/>
+    <ellipse cx="20" cy="20" rx="15" ry="12" fill="#2c2822"/>
+  </g>
+  
+  <!-- 竹子剪影 - 左侧 -->
+  <g opacity="0.4" transform="translate(50, 500)">
+    <line x1="0" y1="0" x2="0" y2="200" stroke="#2c2822" stroke-width="2"/>
+    <line x1="0" y1="50" x2="-15" y2="40" stroke="#2c2822" stroke-width="1"/>
+    <line x1="0" y1="50" x2="15" y2="40" stroke="#2c2822" stroke-width="1"/>
+    <line x1="0" y1="80" x2="-18" y2="68" stroke="#2c2822" stroke-width="1"/>
+    <line x1="0" y1="80" x2="18" y2="68" stroke="#2c2822" stroke-width="1"/>
+    <line x1="0" y1="120" x2="-20" y2="105" stroke="#2c2822" stroke-width="1"/>
+    <line x1="0" y1="120" x2="20" y2="105" stroke="#2c2822" stroke-width="1"/>
+    <line x1="0" y1="160" x2="-22" y2="145" stroke="#2c2822" stroke-width="1"/>
+    <line x1="0" y1="160" x2="22" y2="145" stroke="#2c2822" stroke-width="1"/>
+  </g>
+  
+  <!-- 印章效果 - 朱砂红 -->
+  <g transform="translate(1820, 950)">
+    <rect x="0" y="0" width="60" height="60" fill="#c93939" opacity="0.85" rx="3"/>
+    <text x="30" y="38" text-anchor="middle" font-family="serif" font-size="20" font-weight="bold" fill="#fdfbf6" opacity="0.95">策展</text>
+  </g>
+  
+  <!-- 顶部暗金色装饰边框 -->
+  <rect x="0" y="0" width="1920" height="3" fill="url(#paperGrad)" opacity="0"/>
+  <line x1="0" y1="15" x2="1920" y2="15" stroke="#b8985a" stroke-width="1" opacity="0.3"/>
+  <line x1="0" y1="1065" x2="1920" y2="1065" stroke="#b8985a" stroke-width="1" opacity="0.3"/>
+  <line x1="15" y1="0" x2="15" y2="1080" stroke="#b8985a" stroke-width="1" opacity="0.3"/>
+  <line x1="1905" y1="0" x2="1905" y2="1080" stroke="#b8985a" stroke-width="1" opacity="0.3"/>
+  
+  <!-- 四角暗金纹饰 -->
+  <g opacity="0.6">
+    <!-- 左上 -->
+    <path d="M 20 40 L 20 20 L 40 20" stroke="#b8985a" stroke-width="2" fill="none"/>
+    <circle cx="30" cy="30" r="3" fill="#b8985a"/>
+    <!-- 右上 -->
+    <path d="M 1900 40 L 1900 20 L 1880 20" stroke="#b8985a" stroke-width="2" fill="none"/>
+    <circle cx="1890" cy="30" r="3" fill="#b8985a"/>
+    <!-- 左下 -->
+    <path d="M 20 1040 L 20 1060 L 40 1060" stroke="#b8985a" stroke-width="2" fill="none"/>
+    <circle cx="30" cy="1050" r="3" fill="#b8985a"/>
+    <!-- 右下 -->
+    <path d="M 1900 1040 L 1900 1060 L 1880 1060" stroke="#b8985a" stroke-width="2" fill="none"/>
+    <circle cx="1890" cy="1050" r="3" fill="#b8985a"/>
+  </g>
+</svg>
